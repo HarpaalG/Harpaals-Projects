@@ -5,7 +5,7 @@ import datetime
 
 # Create your views here.
 def index(request):
-    api_key = "6fa443ba0d333357e9400f71b06bbdaf"
+    api_key = "API KEY not displayed"
     current_weather_url = "http://api.openweathermap.org/data/2.5/weather?q={}&appid={}"
     forecast_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&exclude=current,minutely,hourly,alerts&appid={}"
 
