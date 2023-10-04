@@ -10,7 +10,7 @@ using namespace std;
 void PrintHeaderInfo() {
     cout << "Course: Scripting & Programming - Applications - C867" << endl;
     cout << "Programming Language: C++" << endl;
-    cout << "Student ID: 010712570" << endl;
+    cout << "Student ID: Not Specified" << endl;
     cout << "Name: Harpaal Gohlwar" << endl << endl;
 }
     
