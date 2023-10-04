@@ -1,2 +1,2 @@
-Hi! This is a personal project that I created utilizng Python and Django. It's a weather application that allows the user to input 1-2 city locations and compare weather data. The weather data includes a 5-day forecast of temperature and conditions, doing so by making calls to an API. 
+Hi! This is a personal project that I developed utilizng Python and Django. It's a weather application that allows the user to input 1-2 city locations and compare weather data. The weather data includes a 5-day forecast of temperature and conditions, doing so by making calls to an API. 
 This project demonstrates knowledge of basic programming logic, use of the Django framework, and successful implementation of an API. 
