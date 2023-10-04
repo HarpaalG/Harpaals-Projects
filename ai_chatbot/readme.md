@@ -1,0 +1,1 @@
+Hi! This is a personal project I developed utilizing Python. It is an AI chatbot that outputs responses to the user as a fictional character from a children's televsion show. This project demonstrates knowledge of basic programming logic, error handling, built in Python functions, and implementation of an API. 
