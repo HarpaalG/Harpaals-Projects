@@ -81,7 +81,7 @@ DROP TRIGGER new_summary_table ON detailed_table CASCADE;
 
 -- Testing trigger by inserting data into detailed table	
 INSERT INTO detailed_table
-VALUES (1, 'Harpaal', 'Gohlwar','hgohlw1@wgu.edu', 12, 13, 212.00, '2007-03-21');
+VALUES (1, 'Harpaal', 'Gohlwar','test-email@wgu.edu', 12, 13, 212.00, '2007-03-21');
 
 -- Validating data insertion into detailed table and proper trigger functionality
 DELETE FROM detailed_table
