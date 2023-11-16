@@ -1,0 +1,127 @@
+--A. Business Problem: Which customers generated the most revenue in the last quarter? 
+/*C. Provide original SQL code that creates the detailed and summary tables
+to hold your report table sections.*/
+-- Detailed Table
+CREATE TABLE detailed_table (
+customer_id INT,
+first_name VARCHAR(45),
+last_name VARCHAR(45),
+email VARCHAR(50),
+payment_id INT,
+rental_id INT,
+amount NUMERIC(5,2),
+payment_date DATE
+);
+
+-- Verifying successful table creation
+DROP TABLE detailed_table;
+SELECT * FROM detailed_table;
+
+-- Summary Table 
+CREATE TABLE summary_table (
+name VARCHAR(100),
+revenue NUMERIC(5,2),
+email VARCHAR(50)
+);
+
+-- Verifying successful table creation
+DROP TABLE summary_table;
+SELECT * FROM summary_table;
+
+/*D. Provide an original SQL query in a text format that will extract the raw data needed
+for the detailed section of your report from the source database.*/
+INSERT INTO detailed_table
+(customer_id, first_name, last_name, email, payment_id, rental_id, amount, payment_date)
+SELECT c.customer_id, c.first_name, c.last_name, c.email, p.payment_id, p.rental_id, p.amount, p.payment_date
+FROM customer c
+LEFT JOIN payment p ON c.customer_id = p.customer_id;
+
+-- Verifying successful insertion of data and validity
+SELECT * FROM detailed_table;
+
+/*E. Provide original SQL code in a text format that creates a trigger on the detailed table
+of the report that will continually update the summary table as data is added to the 
+detailed table.*/
+/*B. Provide original code for function(s) that perform the transformation(s) you identified
+in part A4.*/
+CREATE OR REPLACE FUNCTION insert_trigger_function()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+DELETE FROM summary_table;
+INSERT INTO summary_table (name, revenue, email)
+-- B. Transformation and Aggregate Functions
+SELECT CONCAT(first_name,' ',last_name) as name, SUM(amount) as revenue, email
+FROM detailed_table
+
+/* Below is an example of a WHERE clause that would actually run the previous quarters values
+based on the current date of running this trigger.
+Since we are working with a sample database that ONLY supplies 3 months of data, 
+no "WHERE payment_date..." clause is necessary. The below WHERE clause ensures that ANY sized business
+with any date range of data can select the top 10 customers from their previous quarter. */
+
+/* WHERE payment_date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '3 months'
+AND payment_date < DATE_TRUNC('month', CURRENT_DATE) */
+
+GROUP BY name, email
+ORDER BY revenue DESC
+LIMIT 10;
+RETURN NEW;
+END;
+$$
+
+CREATE TRIGGER new_summary_table
+	AFTER INSERT 
+	ON detailed_table
+	FOR EACH STATEMENT
+	EXECUTE PROCEDURE insert_trigger_function();
+-- Dropping trigger function to ensure proper function of refresh procedure. 
+DROP TRIGGER new_summary_table ON detailed_table CASCADE;
+
+-- Testing trigger by inserting data into detailed table	
+INSERT INTO detailed_table
+VALUES (1, 'Harpaal', 'Gohlwar','hgohlw1@wgu.edu', 12, 13, 212.00, '2007-03-21');
+
+-- Validating data insertion into detailed table and proper trigger functionality
+DELETE FROM detailed_table
+WHERE first_name = 'Harpaal';
+
+SELECT COUNT(*) FROM detailed_table; --14596 rows of raw data before any insertion
+
+SELECT * FROM summary_table;
+
+/*F. Provide an original stored procedure that can be used to refresh the data in both the 
+detailed and summary tables. The procedure should clear the contents of the detailed table
+and summary table and perform the raw data extraction from part D.*/
+CREATE OR REPLACE PROCEDURE refresh_tables()
+LANGUAGE plpgsql
+AS 
+$$
+BEGIN
+DELETE FROM detailed_table;
+DELETE FROM summary_table;
+
+INSERT INTO detailed_table
+(customer_id, first_name, last_name, email, payment_id, rental_id, amount, payment_date)
+SELECT c.customer_id, c.first_name, c.last_name, c.email, p.payment_id, p.rental_id, p.amount, p.payment_date
+FROM customer c
+LEFT JOIN payment p ON c.customer_id = p.customer_id;
+
+INSERT INTO summary_table (name, revenue, email)
+SELECT CONCAT(first_name,' ',last_name) as name, SUM(amount) as revenue, email
+FROM detailed_table
+GROUP BY name, email
+ORDER BY revenue DESC
+LIMIT 10;
+
+END;
+$$
+
+-- Verifying refresh procedure functionality and data validity
+SELECT * FROM detailed_table;
+SELECT COUNT(*) FROM detailed_table; -- Should be back to 14596 after calling refresh_tables procedure
+
+SELECT * FROM summary_table; -- Should delete row "Harpaal Gohlwar" after calling refresh_tables procedure
+
+CALL refresh_tables();
