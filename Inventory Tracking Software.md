@@ -1,1 +1,1 @@
-This is a store inventory tracking software application which will be developed using the Spring Framework, Java, and HTML/CSS. I am currently working on this project with an expected completion date of September 30th, 2024!
+This is a store inventory tracking software application which will be developed using the Spring Framework, Java, and HTML/CSS. I am currently working on this project with an expected completion date of October 15th, 2024!
